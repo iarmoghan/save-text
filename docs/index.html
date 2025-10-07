@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Save Text</title>
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <a class="brand" href="./index.html">Save Text</a>
+        <div class="nav-links">
+          <a href="./index.html">New paste</a>
+          <a href="./saved.html">Saved pastes</a>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <section class="hero">
+        <h1>Create a new paste</h1>
+        <p>
+          Paste or type anything into the editor below. When you click
+          <strong>Create new text</strong> we will store it securely in your browser and
+          give you a shareable link. Visit the <em>Saved pastes</em> page anytime to
+          reopen or delete your entries.
+        </p>
+        <form id="paste-form">
+          <label for="paste-body" class="sr-only">Paste contents</label>
+          <textarea id="paste-body" name="content" placeholder="Start typing or paste something here..." required></textarea>
+          <div style="margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+            <button type="submit" id="submit-btn">Create new text</button>
+            <span id="status" class="notice" role="alert" aria-live="polite"></span>
+          </div>
+        </form>
+        <p class="notice" id="storage-warning" hidden>
+          Local storage is disabled in this browser, so your pastes cannot be saved.
+        </p>
+      </section>
+    </main>
+    <footer>
+      Built for static hosting. All data lives in your browser's storage.
+    </footer>
+    <script type="module">
+      import { createPaste, storageAvailable } from './assets/app.js';
+
+      const form = document.querySelector('#paste-form');
+      const textarea = document.querySelector('#paste-body');
+      const submitButton = document.querySelector('#submit-btn');
+      const status = document.querySelector('#status');
+      const warning = document.querySelector('#storage-warning');
+
+      if (!storageAvailable()) {
+        warning.hidden = false;
+        submitButton.disabled = true;
+      }
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (submitButton.disabled) {
+          return;
+        }
+        const value = textarea.value;
+        submitButton.disabled = true;
+        status.textContent = '';
+        try {
+          const paste = createPaste(value);
+          window.location.href = `./view.html?id=${encodeURIComponent(paste.id)}`;
+        } catch (error) {
+          console.error(error);
+          status.textContent = error.message || 'Unable to save paste.';
+          submitButton.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>

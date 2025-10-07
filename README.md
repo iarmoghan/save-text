@@ -1,59 +1,38 @@
-# save-text
+# Save Text
 
-`save-text` is a lightweight Python utility for persisting text content to disk. It now also includes a minimal web application for capturing pastes, browsing saved snippets, and deleting them when they are no longer needed. The project provides helper functions, a command line interface, and a friendly browser experience for saving strings while ensuring parent directories exist — all without external web frameworks.
+Static pastebin-style interface that works entirely in the browser. The site ships as
+plain HTML, CSS, and JavaScript so it can be hosted on GitHub Pages (or any other
+static file host) without additional services.
 
-## Installation
+## Features
 
-```
-pip install .
-```
+- Create text pastes directly in your browser.
+- Generate a link to reopen the paste later.
+- Browse all saved pastes in a responsive card layout.
+- Delete pastes to remove them from your saved list and invalidate their links.
 
-To install the optional development dependencies run:
+All data lives in `localStorage`, so pastes stay on the device where they were
+created. This keeps the project compatible with GitHub Pages, which cannot run
+server-side code.
 
-```
-pip install .[dev]
-```
+## Local development
 
-## Usage
+Open the HTML files in any modern browser. For example:
 
-### Python API
-
-```python
-from save_text import save_text, save_text_lines
-
-# Write a single string
-save_text("Hello, world!", "output/message.txt")
-
-# Append multiple lines with a trailing newline
-save_text_lines(["first", "second"], "output/list.txt", append=True)
+```bash
+python -m http.server --directory docs
 ```
 
-### Command line interface
+Visit `http://localhost:8000/docs/index.html` to create pastes and
+`http://localhost:8000/docs/saved.html` to review them.
 
-```
-save-text path/to/file.txt "Some content" "Another line"
-```
+## Deploying on GitHub Pages
 
-Use `--append` to append to an existing file, or `--stdin` to read from standard input:
+1. Commit the contents of the `docs/` directory to your repository.
+2. In your repository settings, enable GitHub Pages and choose the **Deploy from a
+   branch** option.
+3. Select your default branch and the `/docs` folder as the publishing source.
+4. Wait for Pages to build, then share the published URL.
 
-```
-echo "Hello" | save-text output/from-stdin.txt --stdin
-```
-
-### Web application
-
-Launch the built-in web interface to paste and manage saved texts:
-
-```
-python -m save_text.web
-```
-
-The home page provides a large text area. Paste your text and click **Create new text** to generate a unique link. Use the **Saved Pastes** menu to review all stored snippets in card form, open any of them, or delete entries you no longer need.
-
-## Development
-
-Run the tests with:
-
-```
-pytest
-```
+Because the experience runs entirely in the browser, no build steps or backend
+services are required.
