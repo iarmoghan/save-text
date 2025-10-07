@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Saved Pastes • Save Text</title>
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <a class="brand" href="./index.html">Save Text</a>
+        <div class="nav-links">
+          <a href="./index.html">New paste</a>
+          <a href="./saved.html">Saved pastes</a>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <section class="card-grid" id="card-grid"></section>
+      <div class="empty-state" id="empty-state" hidden>
+        <h2>No saved pastes yet</h2>
+        <p>Create your first paste to see it appear here.</p>
+      </div>
+      <p class="notice" id="delete-status" role="alert" aria-live="polite"></p>
+    </main>
+    <footer>
+      Built for static hosting. All data lives in your browser's storage.
+    </footer>
+    <script type="module">
+      import { deletePaste, formatDate, listPastes, snippetFrom, storageAvailable } from './assets/app.js';
+
+      const grid = document.querySelector('#card-grid');
+      const emptyState = document.querySelector('#empty-state');
+      const status = document.querySelector('#delete-status');
+
+      if (!storageAvailable()) {
+        emptyState.hidden = false;
+        emptyState.innerHTML = '<h2>Storage unavailable</h2><p>Your browser is blocking local storage, so pastes cannot be listed.</p>';
+      } else {
+        render();
+      }
+
+      function render() {
+        const pastes = listPastes();
+        grid.innerHTML = '';
+        if (pastes.length === 0) {
+          emptyState.hidden = false;
+          return;
+        }
+        emptyState.hidden = true;
+        const fragment = document.createDocumentFragment();
+        for (const paste of pastes) {
+          const card = document.createElement('article');
+          card.className = 'card';
+
+          const snippet = document.createElement('p');
+          snippet.textContent = snippetFrom(paste.content);
+          snippet.style.margin = '0';
+          snippet.style.fontSize = '1.05rem';
+
+          const meta = document.createElement('time');
+          meta.dateTime = paste.createdAt;
+          meta.textContent = `Saved ${formatDate(paste.createdAt)}`;
+
+          const actions = document.createElement('div');
+          actions.className = 'card-actions';
+
+          const open = document.createElement('a');
+          open.href = `./view.html?id=${encodeURIComponent(paste.id)}`;
+          open.className = 'button-link';
+          open.textContent = 'Open';
+
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.textContent = 'Delete';
+          remove.addEventListener('click', () => {
+            const confirmed = window.confirm('Delete this paste? This cannot be undone.');
+            if (!confirmed) {
+              return;
+            }
+            const deleted = deletePaste(paste.id);
+            if (deleted) {
+              status.textContent = 'Paste deleted.';
+              render();
+            } else {
+              status.textContent = 'Unable to delete paste. It may have already been removed.';
+            }
+          });
+
+          actions.append(open, remove);
+          card.append(snippet, meta, actions);
+          fragment.append(card);
+        }
+        grid.append(fragment);
+      }
+    </script>
+  </body>
+</html>

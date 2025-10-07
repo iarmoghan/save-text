@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>View Paste • Save Text</title>
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <a class="brand" href="./index.html">Save Text</a>
+        <div class="nav-links">
+          <a href="./index.html">New paste</a>
+          <a href="./saved.html">Saved pastes</a>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <article class="viewer" id="viewer">
+        <h1>Loading paste…</h1>
+        <p class="notice">Hold tight while we fetch your content.</p>
+      </article>
+    </main>
+    <footer>
+      Built for static hosting. All data lives in your browser's storage.
+    </footer>
+    <script type="module">
+      import { deletePaste, formatDate, getPaste, storageAvailable } from './assets/app.js';
+
+      const viewer = document.querySelector('#viewer');
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      if (!storageAvailable()) {
+        viewer.innerHTML = '<h1>Storage unavailable</h1><p class="notice">Your browser has disabled local storage, so saved pastes cannot be loaded.</p>';
+      } else if (!id) {
+        viewer.innerHTML = '<h1>No paste selected</h1><p class="notice">Return to the <a href="./saved.html">Saved pastes</a> page and choose one to view.</p>';
+      } else {
+        render(id);
+      }
+
+      function render(pasteId) {
+        const paste = getPaste(pasteId);
+        if (!paste) {
+          viewer.innerHTML = '<h1>Paste not found</h1><p class="notice">It may have been deleted. Go back to <a href="./saved.html">Saved pastes</a> to pick another.</p>';
+          return;
+        }
+
+        const shareLink = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(paste.id)}`;
+
+        viewer.innerHTML = '';
+
+        const heading = document.createElement('h1');
+        heading.textContent = 'Saved paste';
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+
+        const created = document.createElement('span');
+        created.textContent = `Created ${formatDate(paste.createdAt)}`;
+
+        const share = document.createElement('span');
+        share.innerHTML = `Share link: <a href="${shareLink}">${shareLink}</a>`;
+
+        meta.append(created, share);
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+
+        const copy = document.createElement('button');
+        copy.type = 'button';
+        copy.textContent = 'Copy link';
+        copy.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(shareLink);
+            copy.textContent = 'Copied!';
+            setTimeout(() => {
+              copy.textContent = 'Copy link';
+            }, 2000);
+          } catch (error) {
+            console.error('Unable to copy', error);
+            copy.textContent = 'Copy failed';
+          }
+        });
+
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.textContent = 'Delete';
+        remove.addEventListener('click', () => {
+          const confirmed = window.confirm('Delete this paste? This cannot be undone.');
+          if (!confirmed) {
+            return;
+          }
+          if (deletePaste(paste.id)) {
+            viewer.innerHTML = '<h1>Paste deleted</h1><p class="notice">It has been removed from this browser. Create a <a href="./index.html">new paste</a> or return to your <a href="./saved.html">saved list</a>.</p>';
+          } else {
+            viewer.innerHTML += '<p class="notice">Unable to delete paste. It may already be gone.</p>';
+          }
+        });
+
+        actions.append(copy, remove);
+
+        const pre = document.createElement('pre');
+        pre.textContent = paste.content;
+
+        viewer.append(heading, meta, actions, pre);
+      }
+    </script>
+  </body>
+</html>
