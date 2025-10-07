@@ -1,0 +1,210 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f6f6f9;
+  --fg: #1f1f27;
+  --card: #ffffff;
+  --accent: #2563eb;
+  --accent-dark: #1d4ed8;
+  --danger: #dc2626;
+  --danger-dark: #b91c1c;
+  --muted: #6b7280;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  width: min(960px, 90vw);
+  margin: 0 auto;
+  padding: 1.5rem 0;
+}
+
+.site-header {
+  background: var(--card);
+  border-bottom: 1px solid rgba(31, 31, 39, 0.08);
+}
+
+.site-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.site-header nav {
+  display: flex;
+  gap: 1rem;
+  font-weight: 600;
+}
+
+.site-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.panel {
+  background: var(--card);
+  border-radius: 1rem;
+  box-shadow: 0 15px 40px rgba(15, 23, 42, 0.08);
+  padding: 2rem;
+  margin: 2rem 0;
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.paste-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.paste-form textarea {
+  width: 100%;
+  padding: 1rem;
+  font: inherit;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(31, 31, 39, 0.12);
+  resize: vertical;
+  min-height: 240px;
+}
+
+.paste-form button {
+  align-self: flex-start;
+}
+
+button {
+  font: inherit;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+button.primary {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
+}
+
+button.primary:hover {
+  background: var(--accent-dark);
+}
+
+button.danger {
+  background: var(--danger);
+  color: white;
+  box-shadow: 0 12px 24px rgba(220, 38, 38, 0.25);
+}
+
+button.danger:hover {
+  background: var(--danger-dark);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+.flash-messages {
+  list-style: none;
+  padding: 1rem;
+  margin: 0 0 2rem;
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 0.75rem;
+}
+
+.flash-messages li {
+  margin: 0;
+}
+
+.paste-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.paste-card {
+  background: var(--card);
+  border-radius: 1rem;
+  box-shadow: 0 10px 32px rgba(15, 23, 42, 0.1);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.paste-card .preview {
+  color: var(--muted);
+  margin: 0;
+}
+
+.paste-card .meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.paste-card form {
+  margin-top: auto;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.panel-header .meta {
+  color: var(--muted);
+  margin: 0.25rem 0 0;
+}
+
+.paste-content {
+  background: rgba(15, 23, 42, 0.05);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.site-footer {
+  padding: 2rem 0 4rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .panel {
+    padding: 1.5rem;
+  }
+
+  .panel-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  button {
+    width: 100%;
+  }
+}
